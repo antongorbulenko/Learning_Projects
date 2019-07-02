@@ -1,0 +1,134 @@
+<!--
+ - Created by agorbulenko on 28-Jun-19.
+ -->
+
+<apex:page id="BuyPage" controller="ProductTableController" docType="HTML-5.0"
+           lightningStylesheets="true">
+    <apex:slds/>
+    <style>
+        #showcase {
+            background-color: #c8f7ff;
+            color: black;
+            padding: 10px;
+            height: 100px;
+            position: fixed;
+            bottom: -64px;
+            left: 0;
+            right: 0;
+            z-index: 1;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            visibility: hidden;
+            }
+
+        #showcase.show {
+            visibility: visible;
+            animation: slider 5s ease;
+            }
+
+        @keyframes slider {
+            15%,
+            100% {
+            bottom: 0
+                }
+            }
+
+
+    </style>
+    <div style="background-color:#c8f7ff;">
+    </div>
+    <apex:form id="form">
+        <apex:slds/>
+        <apex:pageMessages/>
+        <apex:pageBlock>
+            <div id="showcase"></div>
+            <apex:pageBlockSection columns="2" showHeader="true">
+                <apex:inputText styleClass="slds-input"
+                                value="{!contact.Email}"
+                                style="width:350px"
+                                label="{!$ObjectType.Contact.fields.Email.Label}"/>
+                <apex:outputField label="{!$ObjectType.Product_Table__c.fields.Name.Label}"
+                                  value="{!ProductForPurchase.Product_Name__c}"/>
+                <apex:inputText styleClass="slds-input"
+                                value="{!contact.Phone}"
+                                style="width:350px"
+                                label="{!$ObjectType.Contact.fields.Phone.Label}"/>
+                <apex:outputField id="cost"
+                                  label="{!$ObjectType.Product_Table__c.fields.Unit_Price__c.Label}"
+                                  value="{!ProductForPurchase.Unit_Price__c}"/>
+                <apex:inputText styleClass="slds-input"
+                                value="{!contact.FirstName}"
+                                style="width:350px"
+                                label="{!$ObjectType.Contact.fields.FirstName.Label}"/>
+                <apex:input label="{!$Label.UnitCount}"
+                            type="number"
+                            styleClass="slds-input" value="{!unitCount}"
+                            style="width:350px"
+                            id="getCount" onChange="handlerKeyUp(event)"
+                            onKeyUp="handlerKeyUp(event)">
+                </apex:input>
+                <apex:inputText styleClass="slds-input"
+                                value="{!contact.LastName}"
+                                style="width:350px"
+                                label="{!$ObjectType.Contact.fields.LastName.Label}"/>
+                <apex:outputText id="total" label="{!$Label.TotalAmount}"/>
+            </apex:pageBlockSection>
+            <span style="display:none" id="cost">{!ProductForPurchase.Unit_Price__c}</span>
+            <div align="center" draggable="false" class="slds-docked-form-footer">
+                <apex:commandButton styleClass="slds-button slds-button_neutral"
+                                    style="width:120px"
+                                    action="{!detailPageReference}" value="{!$Label.Details}">
+                    <apex:param name="productId" value="{!ProductForPurchase.Id}" assignTo="{!productId}"/>
+                </apex:commandButton>
+                <apex:commandButton styleClass="slds-button slds-button_neutral"
+                                    style="width:120px" action="{!productTablePageReference}"
+                                    value="{!$Label.ProductTable}">
+                </apex:commandButton>
+                <apex:commandButton style="width:120px; background-color: #c8f7ff; color:black"
+                                    styleClass="slds-button slds-button_brand" action="{!Buy}"
+                                    value="{!$Label.Buy}">
+                </apex:commandButton>
+            </div>
+            <div style="display:none">
+                <div align="right">Count:</div>
+                <div align="left"><span id="count">{!ProductForPurchase.Units_Available__c}</span></div>
+            </div>
+            <script type="text/javascript">
+                var cuntAvail =  document.getElementById("count").innerHTML;
+                var cost =  document.getElementById("cost").innerHTML;
+                var totalCost;
+
+                function showShowcase(text) {
+                  var x = document.getElementById("showcase");
+                  x.classList.add("show");
+                  x.innerHTML = text;
+                  setTimeout(function() {
+                    x.classList.remove("show");
+                  }, 8000);
+                }
+
+                function handlerKeyUp({target}) {
+                    var {value} = target;
+                    var result = cuntAvail - value;
+                    if(value>0){
+                    totalCost = (value * cost).toFixed(2);
+                    }else{
+                        totalCost = 0;
+                    }
+                    document.querySelector('span[id*="total"]').innerText = totalCost + ' $';
+
+                    if (value<=0){
+                        showShowcase('{!$Label.InvalidQuantity}')
+                       }
+
+                    if (result < 0){
+                        showShowcase(' We are sorry, but it is only '
+                        + cuntAvail
+                        +' {!$Label.ItemsLeft}')
+                        }
+                }
+
+
+            </script>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

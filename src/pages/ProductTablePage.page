@@ -1,0 +1,49 @@
+<!--
+ - Created by agorbulenko on 18-Jun-19.
+ -->
+
+<apex:page id="ProductTablePage" controller="ProductTableController" lightningStyleSheets="true">
+    <apex:slds />
+    <style>
+.ct{
+text-align:center;
+}
+
+    </style>
+    <div class="slds-scope">
+        <apex:form>
+            <apex:pageBlock>
+                <apex:pageBlockTable value="{!productTables}" var="ProductTable" style="background-color:#c8f7ff">
+                    <apex:column headerValue="{!$Label.Name}" style="font-size:20pt;text-align:center" headerClass="ct">
+                        <apex:commandLink action="{!detailPageReference}">{!ProductTable.Product_Name__c}
+                            <apex:param name="productId" value="{!ProductTable.Id}" assignTo="{!productId}"/>
+                        </apex:commandLink>
+                    </apex:column>
+                    <apex:column headerValue="{!$Label.Description}" style="width:300pt" headerClass="ct">
+                    {!left(ProductTable.Product_Description__c,250)}...
+                        <apex:commandLink action="{!detailPageReference}">{!$Label.More}
+                            <apex:param name="productId" value="{!ProductTable.Id}" assignTo="{!productId}"/>
+                        </apex:commandLink>
+                    </apex:column>
+                    <apex:column headerValue="{!$Label.Image}" headerClass="ct" styleClass="ct">
+                        <apex:image value="{!ProductTable.Image_URL__c}" width="250" height="375"/>
+                    </apex:column>
+                    <apex:column headerValue="{!$Label.DetilPage}" headerClass="ct" styleClass="ct">
+                        <apex:commandLink action="{!detailPageReference}" target="_blank">{!$Label.DetilPage}
+                            <apex:param name="productId" value="{!ProductTable.Id}" assignTo="{!productId}"/>
+                        </apex:commandLink>
+                    </apex:column>
+                    <apex:column headerValue="{!$Label.Buy}" headerClass="ct" styleClass="ct">
+                        <apex:commandLink styleClass="slds-m-top_xx-small slds-button slds-button_neutral btnSubmit"
+                                          style="margin:0 auto;"
+                                          action="{!buyPageReference}">{!$Label.Buy}
+                            <apex:param name="productId" value="{!ProductTable.Id}" assignTo="{!productId}"/>
+                        </apex:commandLink>
+                    </apex:column>
+                    <apex:column headerValue="{!$Label.Price}" value="{!ProductTable.Unit_Price__c} $" headerClass="ct"
+                                 styleClass="ct"/>
+                </apex:pageBlockTable>
+            </apex:pageBlock>
+        </apex:form>
+    </div>
+</apex:page>
